@@ -272,6 +272,13 @@ def slugify(value, substitutions=()):
     """
     # TODO Maybe steal again from current Django 1.5dev
     value = Markup(value).striptags()
+    import unicodedata
+    value = unicodedata.normalize("NFKD", value)
+    value = value.translate({0x308: u"e", ord(u"ß"): u"ss"})
+    value = value.encode("ascii", "ignore").lower().decode('ascii')
+    value = re.sub(r'[^a-z0-9\s-]', '', value).strip()
+    return re.sub(r'[-\s]+', '-', value)
+
     # value must be unicode per se
     import unicodedata
     from unidecode import unidecode
